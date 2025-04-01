@@ -39,10 +39,10 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <header 
-      className={`sticky top-0 z-50 backdrop-blur-sm transition-all duration-200 ${
+      className={`sticky top-0 z-50 transition-all duration-200 ${
         scrolled 
-          ? 'bg-white/90 dark:bg-gray-900/90 shadow-sm border-b border-gray-200 dark:border-gray-800' 
-          : 'bg-gradient-to-r from-primary/90 to-primary-foreground/90 dark:from-primary/80 dark:to-primary-foreground/80'
+          ? 'bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800' 
+          : 'bg-primary dark:bg-gray-900'
       }`}
     >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -59,18 +59,22 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <i className="ri-menu-line text-xl"></i>
           </Button>
           
-          <Link href="/" className="flex items-center gap-2">
-            <div className={`flex items-center justify-center w-9 h-9 rounded-xl shadow-sm ${
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className={`flex items-center justify-center w-10 h-10 rounded-lg shadow-sm ${
               scrolled ? 'bg-primary text-white' : 'bg-white text-primary'
             }`}>
-              <i className="ri-government-line text-lg"></i>
+              <i className="ri-government-line text-xl"></i>
             </div>
-            <h1 className={`text-xl font-bold tracking-tight ${
-              scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
-            }`}>
-              DOGE
-              <span className="hidden sm:inline ml-1 font-medium">Dashboard</span>
-            </h1>
+            <div className="flex flex-col">
+              <h1 className={`text-lg font-bold leading-tight tracking-tight ${
+                scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
+              }`}>
+                DOGE Dashboard
+              </h1>
+              <p className={`text-xs tracking-wide ${
+                scrolled ? 'text-gray-500 dark:text-gray-400' : 'text-white/80'
+              }`}>Department of Government Efficiency</p>
+            </div>
           </Link>
         </div>
         

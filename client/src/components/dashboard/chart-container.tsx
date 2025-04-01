@@ -1,9 +1,10 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface ChartContainerProps {
@@ -13,6 +14,9 @@ interface ChartContainerProps {
   onInfo?: () => void;
   onMoreOptions?: () => void;
   className?: string;
+  description?: string;
+  dataSource?: string;
+  legendContent?: React.ReactNode;
 }
 
 export function ChartContainer({
@@ -21,14 +25,33 @@ export function ChartContainer({
   isLoading = false,
   onInfo,
   onMoreOptions,
-  className
+  className,
+  description,
+  dataSource,
+  legendContent
 }: ChartContainerProps) {
   return (
     <Card className={cn("shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden", className)}>
-      <CardContent className="p-0">
-        <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          <div className="flex space-x-1">
+      <CardHeader className="p-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+              {title}
+            </CardTitle>
+            {description && (
+              <CardDescription className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {description}
+              </CardDescription>
+            )}
+          </div>
+
+          <div className="flex gap-1">
+            {dataSource && (
+              <Badge variant="outline" className="text-xs bg-transparent">
+                <span className="text-gray-500 dark:text-gray-400 mr-1">Source:</span> {dataSource}
+              </Badge>
+            )}
+            
             {onInfo && (
               <TooltipProvider>
                 <Tooltip>
@@ -43,7 +66,7 @@ export function ChartContainer({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>View information</p>
+                    <p>View information about this chart</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -65,27 +88,32 @@ export function ChartContainer({
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>More options</p>
+                      <p>Chart options</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-52">
                   <DropdownMenuItem>
                     <i className="ri-download-line mr-2 text-gray-500"></i>
-                    <span>Download as CSV</span>
+                    <span>Export as CSV</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <i className="ri-image-line mr-2 text-gray-500"></i>
-                    <span>Download as PNG</span>
+                    <span>Save as image</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <i className="ri-fullscreen-line mr-2 text-gray-500"></i>
-                    <span>View Full Screen</span>
+                    <span>View in full screen</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
+                    <i className="ri-refresh-line mr-2 text-gray-500"></i>
+                    <span>Refresh data</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
                     <i className="ri-share-line mr-2 text-gray-500"></i>
-                    <span>Share</span>
+                    <span>Share chart</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -93,18 +121,30 @@ export function ChartContainer({
           </div>
         </div>
         
-        <div className="relative h-[320px] w-full p-4">
+        {legendContent && (
+          <div className="flex items-center justify-end gap-3 text-sm text-gray-500 flex-wrap mt-1">
+            {legendContent}
+          </div>
+        )}
+      </CardHeader>
+      
+      <CardContent className="px-4 pb-4 pt-0">
+        <div className="relative w-full" style={{ height: "320px" }}>
           {isLoading ? (
             <div className="h-full w-full flex flex-col items-center justify-center space-y-4">
-              <Skeleton className="h-4/5 w-full rounded-lg" />
-              <div className="flex space-x-2">
-                <Skeleton className="h-2 w-10 rounded-full" />
-                <Skeleton className="h-2 w-12 rounded-full" />
-                <Skeleton className="h-2 w-8 rounded-full" />
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <Skeleton className="h-3/4 w-full rounded-lg" />
+                <div className="flex space-x-4 mt-4 w-full justify-center">
+                  <Skeleton className="h-2 w-16 rounded-full" />
+                  <Skeleton className="h-2 w-20 rounded-full" />
+                  <Skeleton className="h-2 w-14 rounded-full" />
+                </div>
               </div>
             </div>
           ) : (
-            children
+            <div className="h-full w-full">
+              {children}
+            </div>
           )}
         </div>
       </CardContent>
