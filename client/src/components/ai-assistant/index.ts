@@ -1,1 +1,1 @@
-export { AIAssistant, AIAssistantProvider, useAIAssistant } from './ai-assistant';
+export { AIAssistant } from './ai-assistant';

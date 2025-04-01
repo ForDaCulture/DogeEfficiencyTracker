@@ -127,13 +127,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 >
                   Waste Analysis
                 </SidebarItem>
-                <SidebarItem
-                  href="/ai-queries"
-                  icon={<i className="ri-ai-generate" />}
-                  active={location === "/ai-queries"}
-                >
-                  User Queries with AI
-                </SidebarItem>
               </ul>
             </div>
             

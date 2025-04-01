@@ -67,12 +67,12 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             </div>
             <div className="flex flex-col">
               <h1 className={`text-lg font-bold leading-tight tracking-tight ${
-                scrolled ? 'text-foreground' : 'text-white'
+                scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
               }`}>
                 DOGE Dashboard
               </h1>
               <p className={`text-xs tracking-wide ${
-                scrolled ? 'text-muted-foreground' : 'text-white/80'
+                scrolled ? 'text-gray-500 dark:text-gray-400' : 'text-white/80'
               }`}>Department of Government Efficiency</p>
             </div>
           </Link>
