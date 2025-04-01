@@ -15,18 +15,18 @@ interface SidebarItemProps {
 const SidebarItem = ({ href, icon, children, active }: SidebarItemProps) => {
   return (
     <li>
-      <Link
+      <a
         href={href}
         className={cn(
-          "flex items-center px-3 py-2 text-sm font-medium rounded-md",
+          "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150",
           active
-            ? "text-primary-600 bg-primary-50"
-            : "text-gray-700 hover:bg-gray-100"
+            ? "text-primary bg-primary/10 dark:bg-primary/20"
+            : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
         )}
       >
         <span className="mr-3 text-lg">{icon}</span>
         <span>{children}</span>
-      </Link>
+      </a>
     </li>
   );
 };
@@ -52,17 +52,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "bg-white shadow-lg w-64 fixed inset-y-0 left-0 z-30 pt-16 transition-transform duration-300 ease-in-out",
+          "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 w-64 fixed inset-y-0 left-0 z-30 pt-16 transition-transform duration-300 ease-in-out",
           isOpen || !isMobile ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col overflow-y-auto">
+        <div className="h-full flex flex-col overflow-y-auto scrollbar-thin">
           <nav className="flex-1 px-4 py-4">
-            <div className="mb-4">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <div className="mb-6">
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-3">
                 Main
               </h2>
-              <ul className="mt-2 space-y-1">
+              <ul className="space-y-1">
                 <SidebarItem
                   href="/"
                   icon={<i className="ri-dashboard-line" />}
@@ -94,11 +94,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </ul>
             </div>
             
-            <div className="mb-4">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <div className="mb-6">
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-3">
                 Analytics
               </h2>
-              <ul className="mt-2 space-y-1">
+              <ul className="space-y-1">
                 <SidebarItem
                   href="/performance"
                   icon={<i className="ri-line-chart-line" />}
@@ -130,11 +130,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </ul>
             </div>
             
-            <div>
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <div className="mb-6">
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-3">
                 Support
               </h2>
-              <ul className="mt-2 space-y-1">
+              <ul className="space-y-1">
                 <SidebarItem
                   href="/help"
                   icon={<i className="ri-question-line" />}
@@ -153,16 +153,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </nav>
           
-          <Separator />
+          <Separator className="my-1 opacity-50" />
           
           <div className="p-4">
             <a
               href="https://api.doge.gov/docs"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-sm font-medium text-primary-600 hover:text-primary-700"
+              className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
-              <i className="ri-book-open-line mr-2"></i>
+              <i className="ri-book-open-line mr-2 text-lg"></i>
               <span>API Documentation</span>
             </a>
           </div>
@@ -172,7 +172,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile Overlay */}
       {isMobile && isOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-20"
+          className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-20"
           onClick={onClose}
         />
       )}

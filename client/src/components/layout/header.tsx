@@ -12,6 +12,7 @@ import {
   DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import { Link } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -20,6 +21,7 @@ interface HeaderProps {
 export function Header({ onToggleSidebar }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+  const { theme, setTheme } = useTheme();
   
   // Handle scroll effect for header
   useEffect(() => {
@@ -31,12 +33,16 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <header 
       className={`sticky top-0 z-50 backdrop-blur-sm transition-all duration-200 ${
         scrolled 
-          ? 'bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white shadow-md' 
-          : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white'
+          ? 'bg-white/90 dark:bg-gray-900/90 shadow-sm border-b border-gray-200 dark:border-gray-800' 
+          : 'bg-gradient-to-r from-primary/90 to-primary-foreground/90 dark:from-primary/80 dark:to-primary-foreground/80'
       }`}
     >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -44,8 +50,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
-            className={`md:hidden ${
-              scrolled ? 'text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800' : 'text-white hover:bg-white/10'
+            className={`md:hidden text-base ${
+              scrolled ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' : 'text-white hover:bg-white/10'
             }`}
             onClick={onToggleSidebar}
             aria-label="Toggle menu"
@@ -54,16 +60,16 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           </Button>
           
           <Link href="/" className="flex items-center gap-2">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${
-              scrolled ? 'bg-blue-600 text-white' : 'bg-white text-blue-600'
+            <div className={`flex items-center justify-center w-9 h-9 rounded-xl shadow-sm ${
+              scrolled ? 'bg-primary text-white' : 'bg-white text-primary'
             }`}>
               <i className="ri-government-line text-lg"></i>
             </div>
-            <h1 className={`text-xl font-semibold tracking-tight ${
-              !scrolled && 'text-white'
+            <h1 className={`text-xl font-bold tracking-tight ${
+              scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
             }`}>
               DOGE
-              <span className="hidden sm:inline"> Dashboard</span>
+              <span className="hidden sm:inline ml-1 font-medium">Dashboard</span>
             </h1>
           </Link>
         </div>
@@ -72,13 +78,13 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         <div className="hidden md:block mx-4 lg:mx-8 max-w-md flex-1">
           <div className="relative">
             <i className={`ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 ${
-              scrolled ? 'text-gray-400' : 'text-white/70'
+              scrolled ? 'text-gray-400 dark:text-gray-500' : 'text-white/70'
             }`}></i>
             <Input
               placeholder="Search dashboards, metrics, or reports..." 
-              className={`pl-9 w-full ${
+              className={`pl-9 w-full shadow-sm ${
                 scrolled 
-                  ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                  ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
                   : 'bg-white/10 border-white/20 placeholder-white/70 text-white focus:bg-white/20'
               }`}
             />
@@ -87,12 +93,12 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         
         {/* Search Bar - For mobile, togglable */}
         {searchActive && (
-          <div className="absolute inset-x-0 top-full left-0 right-0 p-4 bg-white dark:bg-gray-900 shadow-md md:hidden z-50">
+          <div className="absolute inset-x-0 top-full left-0 right-0 p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-md md:hidden z-50 border-b border-gray-200 dark:border-gray-800">
             <div className="relative">
-              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"></i>
               <Input
                 placeholder="Search..." 
-                className="pl-9 w-full bg-gray-100 dark:bg-gray-800"
+                className="pl-9 w-full bg-gray-50 dark:bg-gray-800/50"
                 autoFocus
               />
             </div>
@@ -113,6 +119,19 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <i className="ri-search-line text-xl"></i>
           </Button>
           
+          {/* Theme toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className={`hidden sm:flex ${
+              scrolled ? 'text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800' : 'text-white hover:bg-white/10'
+            }`}
+            aria-label="Toggle theme"
+          >
+            <i className={`text-xl ${theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line'}`}></i>
+          </Button>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -124,32 +143,32 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 aria-label="Notifications"
               >
                 <i className="ri-notification-3-line text-xl"></i>
-                <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">2</Badge>
+                <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">2</Badge>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="h-auto py-3 cursor-pointer">
-                <div className="flex flex-col">
+              <DropdownMenuItem className="h-auto py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 focus:bg-gray-50 dark:focus:bg-gray-800">
+                <div className="flex flex-col w-full">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium">New Report Available</span>
                     <span className="text-xs text-gray-500">5m ago</span>
                   </div>
-                  <span className="text-sm text-gray-600">The Q2 Treasury Waste Analysis report is ready for review.</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">The Q2 Treasury Waste Analysis report is ready for review.</span>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="h-auto py-3 cursor-pointer">
-                <div className="flex flex-col">
+              <DropdownMenuItem className="h-auto py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 focus:bg-gray-50 dark:focus:bg-gray-800">
+                <div className="flex flex-col w-full">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium">Budget Alert</span>
                     <span className="text-xs text-gray-500">1h ago</span>
                   </div>
-                  <span className="text-sm text-gray-600">Defense Department exceeded quarterly budget allocation by 3.2%.</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Defense Department exceeded quarterly budget allocation by 3.2%.</span>
                 </div>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="justify-center text-primary">
+              <DropdownMenuItem className="justify-center text-primary hover:bg-gray-50 dark:hover:bg-gray-800 focus:bg-gray-50 dark:focus:bg-gray-800">
                 View all notifications
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -168,7 +187,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 <i className="ri-settings-3-line text-xl"></i>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem className="cursor-pointer">
                 <i className="ri-user-settings-line mr-2"></i>
                 <span>Profile Settings</span>
@@ -177,16 +196,16 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 <i className="ri-equalizer-line mr-2"></i>
                 <span>Preferences</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <i className="ri-palette-line mr-2"></i>
-                <span>Theme</span>
+              <DropdownMenuItem className="cursor-pointer" onClick={toggleTheme}>
+                <i className={`mr-2 ${theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line'}`}></i>
+                <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer">
                 <i className="ri-question-line mr-2"></i>
                 <span>Help</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer text-red-600">
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
                 <i className="ri-logout-box-line mr-2"></i>
                 <span>Log out</span>
               </DropdownMenuItem>
@@ -195,24 +214,26 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className={`hidden md:flex items-center gap-2 px-2 py-1 rounded-full cursor-pointer ${
-                scrolled ? 'hover:bg-gray-100 dark:hover:bg-gray-800' : 'hover:bg-white/10'
+              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-colors duration-150 ${
+                scrolled 
+                  ? 'hover:bg-gray-100 dark:hover:bg-gray-800' 
+                  : 'hover:bg-white/10'
               }`}>
-                <Avatar className="h-8 w-8 border-2 border-white">
-                  <AvatarFallback className="bg-blue-500 text-white text-sm">JD</AvatarFallback>
+                <Avatar className={`h-8 w-8 ${scrolled ? 'border-2 border-gray-200 dark:border-gray-700' : 'border-2 border-white/30'}`}>
+                  <AvatarFallback className="bg-primary text-white font-medium text-sm">JD</AvatarFallback>
                 </Avatar>
                 <span className={`text-sm font-medium ${
-                  !scrolled && 'text-white'
+                  scrolled ? 'text-gray-800 dark:text-gray-200' : 'text-white'
                 }`}>John Doe</span>
                 <i className={`ri-arrow-down-s-line ${
-                  !scrolled && 'text-white'
+                  scrolled ? 'text-gray-600 dark:text-gray-400' : 'text-white/80'
                 }`}></i>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="flex items-center gap-2 p-2">
-                <Avatar>
-                  <AvatarFallback className="bg-blue-500 text-white">JD</AvatarFallback>
+            <DropdownMenuContent align="end" className="w-64">
+              <div className="flex items-center gap-3 p-3">
+                <Avatar className="h-10 w-10 border-2 border-gray-200 dark:border-gray-700">
+                  <AvatarFallback className="bg-primary text-white">JD</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="font-medium">John Doe</span>
@@ -220,30 +241,60 @@ export function Header({ onToggleSidebar }: HeaderProps) {
                 </div>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <i className="ri-user-line mr-2"></i>
+              <DropdownMenuItem className="cursor-pointer py-2.5">
+                <i className="ri-user-line mr-2 text-lg"></i>
                 <span>My Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <i className="ri-settings-3-line mr-2"></i>
+              <DropdownMenuItem className="cursor-pointer py-2.5">
+                <i className="ri-settings-3-line mr-2 text-lg"></i>
                 <span>Account Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <i className="ri-dashboard-line mr-2"></i>
+              <DropdownMenuItem className="cursor-pointer py-2.5">
+                <i className="ri-dashboard-line mr-2 text-lg"></i>
                 <span>My Dashboards</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer text-red-600">
-                <i className="ri-logout-box-line mr-2"></i>
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400 py-2.5">
+                <i className="ri-logout-box-line mr-2 text-lg"></i>
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
           {/* Mobile-only avatar */}
-          <Avatar className="md:hidden h-8 w-8 border-2 border-white">
-            <AvatarFallback className="bg-blue-500 text-white text-sm">JD</AvatarFallback>
-          </Avatar>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="md:hidden h-8 w-8 cursor-pointer border-2 border-white/80 dark:border-gray-700">
+                <AvatarFallback className="bg-primary text-white text-sm">JD</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 md:hidden">
+              <div className="flex items-center gap-2 p-2">
+                <div className="flex flex-col">
+                  <span className="font-medium">John Doe</span>
+                  <span className="text-xs text-gray-500">Administrator</span>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={toggleTheme}>
+                <i className={`mr-2 ${theme === 'dark' ? 'ri-sun-line' : 'ri-moon-line'}`}></i>
+                <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <i className="ri-user-line mr-2"></i>
+                <span>My Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <i className="ri-settings-3-line mr-2"></i>
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
+                <i className="ri-logout-box-line mr-2"></i>
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

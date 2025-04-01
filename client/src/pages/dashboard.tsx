@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { BudgetChart } from "@/components/dashboard/budget-chart";
 import { EfficiencyChart } from "@/components/dashboard/efficiency-chart";
@@ -10,9 +9,8 @@ import { DepartmentTable } from "@/components/dashboard/department-table";
 import { TopPerforming } from "@/components/dashboard/top-performing";
 import { FilterBar } from "@/components/dashboard/filter-bar";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { DateRangeType, DepartmentType, MetricType } from "@shared/schema";
+import { DateRangeType } from "@shared/schema";
 import { 
-  getDashboardData, 
   getSummaryMetrics,
   getDepartments,
   getBudgetAllocation,
@@ -21,10 +19,10 @@ import {
   getTopPerformingDepartments
 } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Dashboard() {
   const { toast } = useToast();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("");
   const [metricType, setMetricType] = useState("");
@@ -131,7 +129,7 @@ export default function Dashboard() {
       change: 12.3,
       description: "vs. previous period",
       icon: <i className="ri-money-dollar-circle-line"></i>,
-      iconBgClass: "bg-green-100 text-accent-500"
+      iconBgClass: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
     },
     {
       title: "Budget Utilization",
@@ -139,7 +137,7 @@ export default function Dashboard() {
       change: 3.7,
       description: "of allocated budget used effectively",
       icon: <i className="ri-pie-chart-line"></i>,
-      iconBgClass: "bg-blue-100 text-secondary-600"
+      iconBgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
     },
     {
       title: "Project Completion",
@@ -147,7 +145,7 @@ export default function Dashboard() {
       change: -2.1,
       description: "projects completed on schedule",
       icon: <i className="ri-task-line"></i>,
-      iconBgClass: "bg-purple-100 text-purple-600"
+      iconBgClass: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
     },
     {
       title: "Efficiency Score",
@@ -155,27 +153,23 @@ export default function Dashboard() {
       change: 5,
       description: "overall efficiency rating",
       icon: <i className="ri-speed-line"></i>,
-      iconBgClass: "bg-yellow-100 text-yellow-600"
+      iconBgClass: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
     }
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <PageLayout>
+      <div>
+        <PageHeader
+          title="Government Efficiency Overview"
+          subtitle="Real-time metrics from the Department of Government Efficiency"
+          dateRange={dateRange}
+          onDateRangeChange={handleDateRangeChange}
+          onExport={handleExport}
+        />
         
-        <main className="flex-1 md:ml-64 bg-gray-50 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
-            <PageHeader
-              title="Government Efficiency Overview"
-              subtitle="Real-time metrics from the Department of Government Efficiency"
-              dateRange={dateRange}
-              onDateRangeChange={handleDateRangeChange}
-              onExport={handleExport}
-            />
-            
+        <Card className="mb-6 shadow-sm border border-gray-200 dark:border-gray-800">
+          <CardContent className="p-4">
             <FilterBar
               search={search}
               onSearchChange={handleSearchChange}
@@ -185,66 +179,77 @@ export default function Dashboard() {
               onMetricTypeChange={handleMetricTypeChange}
               onMoreFilters={handleMoreFilters}
             />
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              {summaryQuery.data ? (
-                summaryQuery.data.map((metric, index) => (
-                  <MetricCard
-                    key={metric.id}
-                    title={metric.name}
-                    value={metric.value}
-                    change={metric.change}
-                    description={metric.description}
-                    icon={<i className={metric.icon}></i>}
-                    progressValue={Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5}
-                  />
-                ))
-              ) : (
-                metricCardData.map((metric, index) => (
-                  <MetricCard
-                    key={index}
-                    title={metric.title}
-                    value={summaryQuery.isLoading ? "..." : metric.value}
-                    change={summaryQuery.isLoading ? 0 : metric.change}
-                    description={metric.description}
-                    icon={metric.icon}
-                    iconBgClass={metric.iconBgClass}
-                    progressValue={summaryQuery.isLoading ? 0 : (Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5)}
-                  />
-                ))
-              )}
+          </CardContent>
+        </Card>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+          {summaryQuery.data ? (
+            summaryQuery.data.map((metric, index) => (
+              <MetricCard
+                key={metric.id}
+                title={metric.name}
+                value={metric.value}
+                change={metric.change}
+                description={metric.description}
+                icon={<i className={metric.icon}></i>}
+                progressValue={Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5}
+              />
+            ))
+          ) : (
+            metricCardData.map((metric, index) => (
+              <MetricCard
+                key={index}
+                title={metric.title}
+                value={summaryQuery.isLoading ? "..." : metric.value}
+                change={summaryQuery.isLoading ? 0 : metric.change}
+                description={metric.description}
+                icon={metric.icon}
+                iconBgClass={metric.iconBgClass}
+                progressValue={summaryQuery.isLoading ? 0 : (Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5)}
+              />
+            ))
+          )}
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <BudgetChart 
+            data={budgetChartQuery.data || []} 
+            isLoading={budgetChartQuery.isLoading} 
+          />
+          <EfficiencyChart 
+            data={efficiencyChartQuery.data || []} 
+            isLoading={efficiencyChartQuery.isLoading} 
+          />
+        </div>
+        
+        <Card className="mb-6 shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                Department Performance
+              </h3>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <BudgetChart 
-                data={budgetChartQuery.data || []} 
-                isLoading={budgetChartQuery.isLoading} 
-              />
-              <EfficiencyChart 
-                data={efficiencyChartQuery.data || []} 
-                isLoading={efficiencyChartQuery.isLoading} 
+            <div className="p-0">
+              <DepartmentTable 
+                departments={departmentsQuery.data || []}
+                isLoading={departmentsQuery.isLoading}
               />
             </div>
-            
-            <DepartmentTable 
-              departments={departmentsQuery.data || []}
-              isLoading={departmentsQuery.isLoading}
-            />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 mt-6">
-              <CompletionChart 
-                data={completionChartQuery.data || []} 
-                isLoading={completionChartQuery.isLoading}
-                className="lg:col-span-2"
-              />
-              <TopPerforming 
-                departments={topPerformingQuery.data || []}
-                isLoading={topPerformingQuery.isLoading}
-              />
-            </div>
-          </div>
-        </main>
+          </CardContent>
+        </Card>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+          <CompletionChart 
+            data={completionChartQuery.data || []} 
+            isLoading={completionChartQuery.isLoading}
+            className="lg:col-span-2"
+          />
+          <TopPerforming 
+            departments={topPerformingQuery.data || []}
+            isLoading={topPerformingQuery.isLoading}
+          />
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
