@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,27 @@ interface Message {
   timestamp: Date;
 }
 
-export function AIAssistant() {
+interface AIAssistantContextType {
+  openAssistant: () => void;
+  openAssistantWithQuery: (query: string) => void;
+}
+
+interface AIAssistantProviderProps {
+  children: ReactNode;
+}
+
+const AIAssistantContext = createContext<AIAssistantContextType | undefined>(undefined);
+
+export function useAIAssistant() {
+  const context = useContext(AIAssistantContext);
+  if (!context) {
+    throw new Error('useAIAssistant must be used within an AIAssistantProvider');
+  }
+  return context;
+}
+
+// Main component that renders the UI and also provides the context
+export function AIAssistantProvider({ children }: AIAssistantProviderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +57,70 @@ export function AIAssistant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  // Functions for the context provider
+  const openAssistant = () => {
+    setIsOpen(true);
+    setShowWelcomeBubble(false);
+    setIsMinimized(false);
+  };
+  
+  const openAssistantWithQuery = (initialQuery: string) => {
+    openAssistant();
+    
+    // Simulate user entering this query
+    const userMessage: Message = {
+      role: 'user',
+      content: initialQuery,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Process the query
+    (async () => {
+      setIsLoading(true);
+      
+      try {
+        const response = await fetch('/api/ai/assistant', {
+          method: 'POST',
+          body: JSON.stringify({ query: initialQuery }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: data.response,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to get a response from the assistant.',
+          variant: 'destructive'
+        });
+        
+        const errorMessage: Message = {
+          role: 'assistant',
+          content: 'I apologize, but I encountered an error processing your request. Please try again later.',
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,8 +187,14 @@ export function AIAssistant() {
     }
   }, [showWelcomeBubble]);
 
+  // Set up the context value 
+  const contextValue: AIAssistantContextType = {
+    openAssistant,
+    openAssistantWithQuery
+  };
+
   return (
-    <>
+    <AIAssistantContext.Provider value={contextValue}>
       {/* Floating button */}
       <Button
         className="fixed bottom-6 right-6 rounded-full p-4 shadow-lg z-50 flex items-center justify-center bg-blue-600 hover:bg-blue-700"
@@ -238,6 +328,6 @@ export function AIAssistant() {
           )}
         </Card>
       )}
-    </>
+    </AIAssistantContext.Provider>
   );
 }

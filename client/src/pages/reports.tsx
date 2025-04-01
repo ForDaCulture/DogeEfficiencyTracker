@@ -2,8 +2,17 @@ import React from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useAIAssistant } from "@/components/ai-assistant";
 
 export default function Reports() {
+  const { openAssistantWithQuery } = useAIAssistant();
+
+  const handleGenerateReport = () => {
+    openAssistantWithQuery(
+      "I'd like to generate a new report. Can you help me understand what type of government efficiency reports I can create and guide me through the process?"
+    );
+  };
+
   const reports = [
     {
       id: 1,
@@ -56,7 +65,7 @@ export default function Reports() {
               Access detailed reports and analysis on government efficiency, spending patterns, and optimization opportunities.
             </p>
           </div>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={handleGenerateReport}>
             <i className="ri-file-add-line"></i>
             <span>Generate New Report</span>
           </Button>

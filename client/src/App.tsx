@@ -10,7 +10,7 @@ import WasteAnalysis from "@/pages/waste-analysis";
 import Help from "@/pages/help";
 import Documentation from "@/pages/documentation";
 import NotFound from "@/pages/not-found";
-import { AIAssistant } from "@/components/ai-assistant";
+import { AIAssistantProvider } from "@/components/ai-assistant";
 
 function Router() {
   return (
@@ -32,10 +32,9 @@ function Router() {
 
 function App() {
   return (
-    <>
+    <AIAssistantProvider>
       <Router />
-      <AIAssistant />
-    </>
+    </AIAssistantProvider>
   );
 }
 
