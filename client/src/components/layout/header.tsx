@@ -41,8 +41,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     <header 
       className={`sticky top-0 z-50 transition-all duration-200 ${
         scrolled 
-          ? 'bg-background shadow-sm border-b border-border' 
-          : 'bg-primary'
+          ? 'bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800' 
+          : 'bg-primary dark:bg-gray-900'
       }`}
     >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">

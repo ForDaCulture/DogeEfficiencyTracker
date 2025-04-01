@@ -7,6 +7,7 @@ import Performance from "@/pages/performance";
 import SpendingAnalysis from "@/pages/spending-analysis";
 import Comparison from "@/pages/comparison";
 import WasteAnalysis from "@/pages/waste-analysis";
+import AIQueries from "@/pages/ai-queries";
 import Help from "@/pages/help";
 import Documentation from "@/pages/documentation";
 import NotFound from "@/pages/not-found";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/spending-analysis" component={SpendingAnalysis} />
       <Route path="/comparison" component={Comparison} />
       <Route path="/waste-analysis" component={WasteAnalysis} />
+      <Route path="/ai-queries" component={AIQueries} />
       <Route path="/help" component={Help} />
       <Route path="/documentation" component={Documentation} />
       <Route component={NotFound} />
