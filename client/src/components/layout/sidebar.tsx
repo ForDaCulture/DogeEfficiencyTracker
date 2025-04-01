@@ -15,7 +15,7 @@ interface SidebarItemProps {
 const SidebarItem = ({ href, icon, children, active }: SidebarItemProps) => {
   return (
     <li>
-      <a
+      <Link
         href={href}
         className={cn(
           "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150",
@@ -26,7 +26,7 @@ const SidebarItem = ({ href, icon, children, active }: SidebarItemProps) => {
       >
         <span className="mr-3 text-lg">{icon}</span>
         <span>{children}</span>
-      </a>
+      </Link>
     </li>
   );
 };
