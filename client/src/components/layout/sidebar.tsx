@@ -119,6 +119,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 >
                   Comparison
                 </SidebarItem>
+                <SidebarItem
+                  href="/waste-analysis"
+                  icon={<i className="ri-scales-line" />}
+                  active={location === "/waste-analysis"}
+                >
+                  Waste Analysis
+                </SidebarItem>
               </ul>
             </div>
             
