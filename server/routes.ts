@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { handleAIAssistantQuery, generateImage } from "./ai-assistant";
+import { generateDocumentation } from "./documentation-generator";
 import { 
   SummaryMetric, 
   DepartmentMetric, 
@@ -859,6 +860,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Image Generation API Route
   app.post("/api/ai/generate-image", generateImage);
+  
+  // Documentation Generator API Route
+  app.post("/api/documentation/generate", generateDocumentation);
   
   const httpServer = createServer(app);
 

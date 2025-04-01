@@ -4,9 +4,71 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 export default function Documentation() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedDocumentation, setGeneratedDocumentation] = useState<any>(null);
+  const { toast } = useToast();
+  
+  // Form state for document generation
+  const [docRequest, setDocRequest] = useState({
+    topic: "",
+    department: "",
+    format: "markdown",
+    includeCharts: true,
+    year: "2025"
+  });
+
+  // Handle form field changes
+  const handleInputChange = (field: string, value: any) => {
+    setDocRequest({
+      ...docRequest,
+      [field]: value
+    });
+  };
+
+  // Handle document generation request
+  const generateDocument = async () => {
+    if (!docRequest.topic) {
+      toast({
+        title: "Topic Required",
+        description: "Please enter a topic for your documentation",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      setIsGenerating(true);
+      
+      const response = await axios.post('/api/documentation/generate', docRequest);
+      
+      setGeneratedDocumentation(response.data);
+      
+      toast({
+        title: "Documentation Generated",
+        description: "Your custom documentation has been created successfully.",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error generating documentation:', error);
+      toast({
+        title: "Generation Failed",
+        description: "There was an error generating your documentation. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const sections = [
     {
@@ -234,9 +296,130 @@ export default function Documentation() {
                       <span>API Reference</span>
                     </a>
                   </li>
+                  <li className="pt-2 mt-2 border-t">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-full justify-start text-sm text-blue-600 hover:text-blue-800">
+                          <i className="ri-file-text-line mr-2"></i>
+                          <span>Generate Custom Documentation</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Generate Custom Documentation</DialogTitle>
+                          <DialogDescription>
+                            The Bald Eagle will help create tailored documentation based on your specific needs
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="topic">Documentation Topic</Label>
+                            <Textarea 
+                              id="topic" 
+                              placeholder="Enter the topic or question you need documentation for..."
+                              value={docRequest.topic}
+                              onChange={(e) => handleInputChange('topic', e.target.value)}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="department">Department (Optional)</Label>
+                              <Select 
+                                value={docRequest.department} 
+                                onValueChange={(value) => handleInputChange('department', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="All Departments" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">All Departments</SelectItem>
+                                  <SelectItem value="treasury">Treasury</SelectItem>
+                                  <SelectItem value="defense">Defense</SelectItem>
+                                  <SelectItem value="education">Education</SelectItem>
+                                  <SelectItem value="transportation">Transportation</SelectItem>
+                                  <SelectItem value="health">Health & Human Services</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="format">Format</Label>
+                              <Select 
+                                value={docRequest.format}
+                                onValueChange={(value) => handleInputChange('format', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Format" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="markdown">Markdown</SelectItem>
+                                  <SelectItem value="pdf">PDF</SelectItem>
+                                  <SelectItem value="text">Plain Text</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Switch 
+                                id="includeCharts" 
+                                checked={docRequest.includeCharts}
+                                onCheckedChange={(checked) => handleInputChange('includeCharts', checked)}
+                              />
+                              <Label htmlFor="includeCharts">Include charts and visualizations</Label>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button 
+                            type="submit" 
+                            onClick={generateDocument} 
+                            disabled={isGenerating}
+                          >
+                            {isGenerating ? (
+                              <>
+                                <i className="ri-loader-2-line animate.spin mr-2" />
+                                Generating...
+                              </>
+                            ) : (
+                              'Generate Documentation'
+                            )}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </li>
                 </ul>
               </CardContent>
             </Card>
+            
+            {/* Show generated documentation if available */}
+            {generatedDocumentation && (
+              <Card className="mt-4">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Generated Documentation</CardTitle>
+                  <CardDescription>
+                    AI-generated content for your requested topic
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="prose max-w-none border rounded-md p-4 bg-gray-50">
+                    {generatedDocumentation.content ? (
+                      <div dangerouslySetInnerHTML={{ __html: generatedDocumentation.content }} />
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        Documentation content will appear here when generated
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <Button variant="outline" size="sm" className="gap-1">
+                      <i className="ri-download-line" />
+                      <span>Download</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
           
           {/* Documentation Content Area */}

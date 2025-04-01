@@ -196,6 +196,7 @@ export default function Dashboard() {
                     change={metric.change}
                     description={metric.description}
                     icon={<i className={metric.icon}></i>}
+                    progressValue={Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5}
                   />
                 ))
               ) : (
@@ -208,6 +209,7 @@ export default function Dashboard() {
                     description={metric.description}
                     icon={metric.icon}
                     iconBgClass={metric.iconBgClass}
+                    progressValue={summaryQuery.isLoading ? 0 : (Math.abs(metric.change) * 5 > 100 ? 100 : Math.abs(metric.change) * 5)}
                   />
                 ))
               )}
