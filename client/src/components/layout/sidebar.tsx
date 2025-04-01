@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "@/hooks/use-theme";
 
 interface SidebarItemProps {
   href: string;
