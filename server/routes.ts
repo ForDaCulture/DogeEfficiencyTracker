@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { handleAIAssistantQuery, generateImage } from "./ai-assistant";
 import { 
   SummaryMetric, 
   DepartmentMetric, 
@@ -393,6 +394,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.get("/api/departments/top-performing", async (req, res) => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 200)); // Simulate API latency
+      
+      const limit = parseInt(req.query.limit as string) || 5;
+      const dateRange = req.query.dateRange as DateRangeType || "1y";
+      
+      // In a real app, we would filter by dateRange
+      
+      res.json(mockTopPerforming.slice(0, limit));
+    } catch (error) {
+      console.error("Error in /api/departments/top-performing:", error);
+      res.status(500).json({ error: "Failed to fetch top performing departments" });
+    }
+  });
+  
   app.get("/api/departments/:id", async (req, res) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 200)); // Simulate API latency
@@ -408,22 +425,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error(`Error in /api/departments/${req.params.id}:`, error);
       res.status(500).json({ error: "Failed to fetch department details" });
-    }
-  });
-  
-  app.get("/api/departments/top-performing", async (req, res) => {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 200)); // Simulate API latency
-      
-      const limit = parseInt(req.query.limit as string) || 5;
-      const dateRange = req.query.dateRange as DateRangeType || "1y";
-      
-      // In a real app, we would filter by dateRange
-      
-      res.json(mockTopPerforming.slice(0, limit));
-    } catch (error) {
-      console.error("Error in /api/departments/top-performing:", error);
-      res.status(500).json({ error: "Failed to fetch top performing departments" });
     }
   });
   
@@ -853,6 +854,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Assistant API Routes
+  app.post("/api/ai/assistant", handleAIAssistantQuery);
+  
+  // Image Generation API Route
+  app.post("/api/ai/generate-image", generateImage);
+  
   const httpServer = createServer(app);
 
   return httpServer;
