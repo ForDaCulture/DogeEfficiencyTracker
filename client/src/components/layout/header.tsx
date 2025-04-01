@@ -41,8 +41,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     <header 
       className={`sticky top-0 z-50 transition-all duration-200 ${
         scrolled 
-          ? 'bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800' 
-          : 'bg-primary dark:bg-gray-900'
+          ? 'bg-background shadow-sm border-b border-border' 
+          : 'bg-primary'
       }`}
     >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -67,12 +67,12 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             </div>
             <div className="flex flex-col">
               <h1 className={`text-lg font-bold leading-tight tracking-tight ${
-                scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
+                scrolled ? 'text-foreground' : 'text-white'
               }`}>
                 DOGE Dashboard
               </h1>
               <p className={`text-xs tracking-wide ${
-                scrolled ? 'text-gray-500 dark:text-gray-400' : 'text-white/80'
+                scrolled ? 'text-muted-foreground' : 'text-white/80'
               }`}>Department of Government Efficiency</p>
             </div>
           </Link>

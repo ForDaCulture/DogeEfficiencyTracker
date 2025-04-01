@@ -25,16 +25,16 @@ export function PageLayout({ children, title }: PageLayoutProps) {
   }, [isMobile, sidebarOpen]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
-        <main className="flex-1 md:ml-64 bg-gray-50 dark:bg-gray-950 overflow-y-auto transition-all duration-300">
+        <main className="flex-1 md:ml-64 bg-background overflow-y-auto transition-all duration-300">
           <div className="container xl:max-w-7xl mx-auto px-4 sm:px-6 py-6">
             {title && (
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{title}</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-6">{title}</h1>
             )}
             {children}
           </div>
